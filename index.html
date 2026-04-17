@@ -3,648 +3,257 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="مرداس - منصة إعلانية ذكية مدعومة بالذكاء الاصطناعي. إدارة الشاشات، تصميم الإعلانات، إطلاق الحملات، وتحويل شاشاتك إلى مصدر دخل.">
-    <meta name="theme-color" content="#0A66C2">
     <title>مرداس | كل القنوات الإعلانية في مكان واحد</title>
-    
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
-    
-    <!-- Icons for PWA -->
-    <link rel="apple-touch-icon" href="https://via.placeholder.com/192x192/0A66C2/FFFFFF?text=م">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    
+    <meta name="theme-color" content="#0A66C2">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&amp;display=swap');
-        :root {
-            --primary: #0A66C2;
-        }
-        body {
-            font-family: 'Cairo', system-ui, sans-serif;
-        }
-        .hero-bg {
-            background: linear-gradient(135deg, #0A66C2 0%, #1E40AF 100%);
-        }
-        .card-hover {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .card-hover:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 25px 50px -12px rgb(10 102 194 / 0.25);
-        }
-        .nav-link {
-            position: relative;
-        }
-        .nav-link:after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: -2px;
-            right: 0;
-            background-color: #0A66C2;
-            transition: width 0.3s;
-        }
-        .nav-link:hover:after {
-            width: 100%;
-            left: 0;
-            right: auto;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap');
+        body { font-family: 'Cairo', system-ui, sans-serif; }
+        .hero-bg { background: linear-gradient(135deg, #0A66C2 0%, #1E40AF 100%); }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900">
+<body class="bg-slate-50">
 
-    <!-- NAVBAR -->
-    <nav class="bg-white border-b shadow-sm sticky top-0 z-50">
-        <div class="max-w-screen-2xl mx-auto px-6 py-4 flex items-center justify-between">
-            
-            <!-- Logo -->
-            <div class="flex items-center gap-x-3">
-                <div class="w-10 h-10 bg-[#0A66C2] text-white rounded-2xl flex items-center justify-center text-3xl font-bold shadow-inner">م</div>
-                <h1 class="text-3xl font-bold tracking-tight">مرداس</h1>
+    <nav class="bg-white border-b shadow-sm sticky top-0 z-50 p-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-[#0A66C2] text-white rounded-2xl flex items-center justify-center text-3xl font-bold">م</div>
+                <h1 class="text-3xl font-bold">مرداس</h1>
             </div>
-
-            <!-- Desktop Menu -->
-            <div class="hidden md:flex items-center gap-x-8 text-lg font-medium">
-                <a href="#products" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})" class="nav-link text-slate-700 hover:text-[#0A66C2]">المنتجات</a>
-                <a href="#solutions" onclick="document.getElementById('solutions').scrollIntoView({behavior:'smooth'})" class="nav-link text-slate-700 hover:text-[#0A66C2]">الحلول</a>
-                <a href="#how" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})" class="nav-link text-slate-700 hover:text-[#0A66C2]">كيف يعمل</a>
-                <a href="#resources" onclick="document.getElementById('resources').scrollIntoView({behavior:'smooth'})" class="nav-link text-slate-700 hover:text-[#0A66C2]">الموارد</a>
-            </div>
-
-            <div class="flex items-center gap-x-4">
-                <!-- Login -->
-                <button onclick="showLoginModal()" 
-                        class="px-6 py-2.5 text-slate-700 hover:bg-slate-100 rounded-3xl font-medium transition-colors">
-                    تسجيل الدخول
-                </button>
-                
-                <!-- Get Started -->
-                <button onclick="startFreeTrial()" 
-                        class="bg-[#0A66C2] hover:bg-[#0A66C2]/90 text-white px-8 py-2.5 rounded-3xl font-semibold shadow-lg shadow-blue-500/30 transition-all flex items-center gap-x-2">
-                    <span>ابدأ مجاناً</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7-7 7" />
-                    </svg>
-                </button>
-
-                <!-- Mobile Menu Button -->
-                <button onclick="toggleMobileMenu()" class="md:hidden p-3">
-                    <svg id="menu-icon" xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                </button>
-            </div>
-        </div>
-
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden md:hidden bg-white border-t px-6 py-6">
-            <div class="flex flex-col gap-y-6 text-lg">
-                <a href="#products" onclick="toggleMobileMenu()" class="block py-2">المنتجات</a>
-                <a href="#solutions" onclick="toggleMobileMenu()" class="block py-2">الحلول</a>
-                <a href="#how" onclick="toggleMobileMenu()" class="block py-2">كيف يعمل</a>
-                <a href="#resources" onclick="toggleMobileMenu()" class="block py-2">الموارد</a>
-                <div class="pt-4 border-t flex flex-col gap-y-3">
-                    <button onclick="showLoginModal();toggleMobileMenu()" class="w-full py-4 border rounded-3xl">تسجيل الدخول</button>
-                    <button onclick="startFreeTrial();toggleMobileMenu()" class="w-full py-4 bg-[#0A66C2] text-white rounded-3xl">ابدأ مجاناً</button>
-                </div>
-            </div>
+            <button onclick="showAuthModal()" class="bg-[#0A66C2] hover:bg-blue-700 text-white px-6 py-3 rounded-3xl transition-colors">تسجيل الدخول</button>
         </div>
     </nav>
 
-    <!-- HERO -->
-    <header class="hero-bg text-white">
-        <div class="max-w-screen-2xl mx-auto px-6 pt-16 pb-24 grid md:grid-cols-2 gap-12 items-center">
-            <div class="space-y-8">
-                <div class="inline-flex items-center gap-x-2 bg-white/20 text-white text-sm font-medium px-6 py-2 rounded-3xl backdrop-blur-md">
-                    <span class="relative flex h-3 w-3">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-3 w-3 bg-green-400"></span>
-                    </span>
-                    مستقبل الإعلانات الذكية
-                </div>
+    <div class="max-w-7xl mx-auto p-8 text-center">
+        <h1 class="text-5xl font-bold my-12">مرداس – المنصة الإعلانية الذكية</h1>
+        <p class="text-xl text-slate-600 mb-8">مدعومة بـ Firebase (Auth + Firestore + Push Notifications + Real-time)</p>
+        
+        <div id="dashboard-btn" class="hidden fixed bottom-8 right-8 bg-[#0A66C2] text-white px-8 py-4 rounded-3xl shadow-2xl flex items-center gap-3 cursor-pointer hover:bg-blue-700" onclick="showDashboard()">
+            📊 لوحة التحكم (Real-time)
+        </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="hidden fixed inset-0 bg-black/70 z-[9999] flex items-center justify-center">
+        <div class="bg-white rounded-3xl p-8 w-full max-w-md mx-4">
+            <h2 id="modal-title" class="text-2xl font-bold mb-6 text-center">تسجيل الدخول</h2>
+            
+            <div class="space-y-4">
+                <input id="email" type="email" placeholder="البريد الإلكتروني" class="w-full px-5 py-4 border rounded-2xl focus:outline-none focus:border-[#0A66C2]">
+                <input id="password" type="password" placeholder="كلمة المرور" class="w-full px-5 py-4 border rounded-2xl focus:outline-none focus:border-[#0A66C2]">
                 
-                <h1 class="text-5xl md:text-6xl font-bold leading-tight">
-                    كل القنوات الإعلانية<br>في مكان واحد
-                </h1>
+                <button onclick="handleEmailAuth()" id="email-btn" class="w-full py-4 bg-[#0A66C2] text-white rounded-3xl font-semibold">دخول بالإيميل</button>
                 
-                <p class="text-xl md:text-2xl text-white/90 max-w-lg">
-                    منصة متكاملة مدعومة بالذكاء الاصطناعي لإدارة الشاشات الرقمية، تصميم الإعلانات، إطلاق الحملات، وتحويل شاشاتك إلى مصدر دخل فوري.
-                </p>
-                
-                <div class="flex flex-wrap gap-4">
-                    <button onclick="startFreeTrial()" 
-                            class="bg-white text-[#0A66C2] hover:bg-slate-100 px-10 py-5 rounded-3xl text-xl font-semibold shadow-xl flex items-center gap-x-3">
-                        جرب مرداس مجاناً
-                        <span class="text-2xl">→</span>
-                    </button>
-                    
-                    <button onclick="watchVideo()" 
-                            class="border border-white/70 hover:bg-white/10 px-8 py-5 rounded-3xl text-xl font-medium flex items-center gap-x-3 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 4.01V8" />
-                        </svg>
-                        شاهد الفيديو
-                    </button>
-                </div>
-                
-                <div class="flex items-center gap-x-8 text-sm">
-                    <div class="flex -space-x-4">
-                        <div class="w-8 h-8 bg-white/30 rounded-2xl flex items-center justify-center text-xs ring-2 ring-white">🇸🇦</div>
-                        <div class="w-8 h-8 bg-white/30 rounded-2xl flex items-center justify-center text-xs ring-2 ring-white">🏪</div>
-                        <div class="w-8 h-8 bg-white/30 rounded-2xl flex items-center justify-center text-xs ring-2 ring-white">📺</div>
-                    </div>
-                    <p class="text-white/80">موثوق به من قبل أكثر من ١٢٠٠ شركة سعودية وخليجية</p>
-                </div>
+                <button onclick="handleGoogleSignIn()" class="w-full py-4 border border-gray-300 rounded-3xl flex items-center justify-center gap-3 hover:bg-gray-50">
+                    <span class="text-xl">G</span> تسجيل الدخول بحساب جوجل
+                </button>
             </div>
             
-            <!-- Hero Visual -->
-            <div class="relative hidden md:block">
-                <div class="bg-white/10 backdrop-blur-3xl rounded-3xl p-8 shadow-2xl border border-white/30">
-                    <div class="bg-white rounded-2xl p-6 text-slate-900 shadow-inner">
-                        <div class="flex justify-between items-center mb-6">
-                            <div class="flex items-center gap-x-3">
-                                <div class="text-[#0A66C2] text-2xl">📊</div>
-                                <div>
-                                    <h3 class="font-semibold">حملة جارية</h3>
-                                    <p class="text-sm text-emerald-600">١٢٤ شاشة • ٩٨٪ ظهور</p>
-                                </div>
-                            </div>
-                            <div class="text-4xl font-bold text-[#0A66C2]">١٢٨٤</div>
-                        </div>
-                        
-                        <div class="space-y-4">
-                            <div class="h-2.5 bg-slate-200 rounded-full overflow-hidden">
-                                <div class="h-full w-[92%] bg-emerald-500 rounded-full"></div>
-                            </div>
-                            <div class="grid grid-cols-3 text-xs gap-4">
-                                <div>الوصول: <span class="font-bold">٤٨٤ ألف</span></div>
-                                <div>التفاعل: <span class="font-bold text-emerald-500">+٢٣٪</span></div>
-                                <div>ROI: <span class="font-bold text-emerald-500">٤.٨x</span></div>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-8 flex gap-4 text-xs">
-                            <div class="flex-1 bg-slate-100 rounded-2xl p-4">مرداس إعلانات</div>
-                            <div class="flex-1 bg-slate-100 rounded-2xl p-4">مرداس ستوديو</div>
-                            <div class="flex-1 bg-slate-100 rounded-2xl p-4">مرداس ساينج</div>
-                        </div>
-                    </div>
-                </div>
+            <p onclick="toggleAuthMode()" id="switch-text" class="text-center mt-6 text-blue-600 cursor-pointer hover:underline">ليس لديك حساب؟ أنشئ حساب جديد</p>
+            <button onclick="hideAuthModal()" class="mt-8 w-full py-3 text-slate-500">إغلاق</button>
+        </div>
+    </div>
+
+    <!-- Dashboard Modal -->
+    <div id="dashboard-modal" class="hidden fixed inset-0 bg-black/70 z-[9999] flex items-center justify-center">
+        <div class="bg-white rounded-3xl w-full max-w-3xl max-h-[90vh] overflow-auto mx-4">
+            <div class="p-6 border-b flex justify-between items-center sticky top-0 bg-white z-10">
+                <h2 class="text-2xl font-bold">لوحة التحكم – Real-time</h2>
+                <button onclick="hideDashboard()" class="text-3xl text-gray-400 hover:text-black">×</button>
+            </div>
+            <div class="p-6">
+                <div id="user-info" class="mb-6 p-4 bg-slate-50 rounded-2xl"></div>
+                <h3 class="font-semibold mb-4 text-lg">حملاتي (تتحدث تلقائياً)</h3>
+                <div id="campaigns-list" class="space-y-4 min-h-[200px]"></div>
                 
-                <!-- Floating badges -->
-                <div class="absolute -top-6 -left-6 bg-white text-slate-900 text-sm font-medium px-5 py-3 rounded-3xl shadow-xl flex items-center gap-x-2">
-                    <span>AI</span>
-                    <span class="text-emerald-500">✓</span>
-                    تم تصميم الإعلان في ٤٥ ثانية
-                </div>
-                
-                <div class="absolute -bottom-6 right-12 bg-white text-slate-900 text-sm font-medium px-5 py-3 rounded-3xl shadow-xl flex items-center gap-x-2">
-                    شاشتك الآن
-                    <span class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-2xl text-xs">دخل شهري</span>
+                <div class="flex gap-4 mt-10">
+                    <button onclick="addCampaign()" class="flex-1 py-4 bg-emerald-600 text-white rounded-3xl font-medium">+ إضافة حملة جديدة</button>
+                    <button onclick="requestNotificationPermission()" class="flex-1 py-4 border border-[#0A66C2] text-[#0A66C2] rounded-3xl font-medium">تفعيل الإشعارات</button>
                 </div>
             </div>
-        </div>
-    </header>
-
-    <!-- TRUST BAR -->
-    <div class="bg-white py-6 border-b">
-        <div class="max-w-screen-2xl mx-auto px-6 flex flex-wrap justify-center items-center gap-x-12 gap-y-6 opacity-75">
-            <div class="text-slate-500 font-medium text-xl">ستاربكس</div>
-            <div class="text-slate-500 font-medium text-xl">المراعي</div>
-            <div class="text-slate-500 font-medium text-xl">النهدي</div>
-            <div class="text-slate-500 font-medium text-xl">جرير</div>
-            <div class="text-slate-500 font-medium text-xl">مكتبة جرير</div>
-            <div class="text-slate-500 font-medium text-xl">الرياض مول</div>
         </div>
     </div>
 
-    <!-- PRODUCTS SECTION -->
-    <section id="products" class="max-w-screen-2xl mx-auto px-6 py-24">
-        <div class="text-center mb-16">
-            <span class="px-4 py-2 bg-blue-100 text-[#0A66C2] rounded-3xl text-sm font-semibold">أربعة منتجات • منصة واحدة</span>
-            <h2 class="text-4xl font-bold mt-4">اختر أدواتك الإعلانية الذكية</h2>
-        </div>
-        
-        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <!-- Card 1 -->
-            <div onclick="showProductDetail(1)" class="card-hover bg-white rounded-3xl p-8 border border-slate-100 cursor-pointer">
-                <div class="text-5xl mb-6">📣</div>
-                <h3 class="text-2xl font-bold mb-2">مرداس إعلانات</h3>
-                <p class="text-slate-600 mb-8">أطلق حملات ذكية تستهدف جمهورك بدقة عبر شبكة شاشات مرداس في أفضل المواقع.</p>
-                <ul class="space-y-3 text-sm">
-                    <li class="flex items-center gap-x-2"><span class="text-emerald-500">✓</span> استهداف جغرافي ولحظي</li>
-                    <li class="flex items-center gap-x-2"><span class="text-emerald-500">✓</span> تتبع أداء فوري</li>
-                    <li class="flex items-center gap-x-2"><span class="text-emerald-500">✓</span> تقارير ROI دقيقة</li>
-                </ul>
-                <button class="mt-8 w-full py-4 text-[#0A66C2] border border-[#0A66C2] hover:bg-[#0A66C2] hover:text-white rounded-3xl font-medium">اعرف أكثر</button>
-            </div>
-            
-            <!-- Card 2 -->
-            <div onclick="showProductDetail(2)" class="card-hover bg-white rounded-3xl p-8 border border-slate-100 cursor-pointer">
-                <div class="text-5xl mb-6">🖥️</div>
-                <h3 class="text-2xl font-bold mb-2">مرداس ساينج</h3>
-                <p class="text-slate-600 mb-8">تحكم كامل في كل شاشاتك الرقمية من لوحة تحكم واحدة. لا أجهزة خارجية مطلوبة.</p>
-                <ul class="space-y-3 text-sm">
-                    <li class="flex items-center gap-x-2"><span class="text-emerald-500">✓</span> جدولة المحتوى</li>
-                    <li class="flex items-center gap-x-2"><span class="text-emerald-500">✓</span> مراقبة ٢٤/٧</li>
-                    <li class="flex items-center gap-x-2"><span class="text-emerald-500">✓</span> دعم آلاف الشاشات</li>
-                </ul>
-                <button class="mt-8 w-full py-4 text-[#0A66C2] border border-[#0A66C2] hover:bg-[#0A66C2] hover:text-white rounded-3xl font-medium">اعرف أكثر</button>
-            </div>
-            
-            <!-- Card 3 -->
-            <div onclick="showProductDetail(3)" class="card-hover bg-white rounded-3xl p-8 border border-slate-100 cursor-pointer">
-                <div class="text-5xl mb-6">🎨</div>
-                <h3 class="text-2xl font-bold mb-2">مرداس ستوديو</h3>
-                <p class="text-slate-600 mb-8">صمم إعلانات احترافية في دقائق باستخدام قوالب AI. بدون خبرة تصميم.</p>
-                <ul class="space-y-3 text-sm">
-                    <li class="flex items-center gap-x-2"><span class="text-emerald-500">✓</span> توليد AI فوري</li>
-                    <li class="flex items-center gap-x-2"><span class="text-emerald-500">✓</span> قوالب جاهزة</li>
-                    <li class="flex items-center gap-x-2"><span class="text-emerald-500">✓</span> نشر مباشر</li>
-                </ul>
-                <button class="mt-8 w-full py-4 text-[#0A66C2] border border-[#0A66C2] hover:bg-[#0A66C2] hover:text-white rounded-3xl font-medium">ابدأ التصميم</button>
-            </div>
-            
-            <!-- Card 4 -->
-            <div onclick="showProductDetail(4)" class="card-hover bg-white rounded-3xl p-8 border border-slate-100 cursor-pointer">
-                <div class="text-5xl mb-6">💰</div>
-                <h3 class="text-2xl font-bold mb-2">مرداس ناشر</h3>
-                <p class="text-slate-600 mb-8">حوّل شاشاتك إلى مصدر دخل تلقائي. احصل على حملات مدفوعة من العلامات التجارية.</p>
-                <ul class="space-y-3 text-sm">
-                    <li class="flex items-center gap-x-2"><span class="text-emerald-500">✓</span> مدفوعات شفافة</li>
-                    <li class="flex items-center gap-x-2"><span class="text-emerald-500">✓</span> تحكم كامل</li>
-                    <li class="flex items-center gap-x-2"><span class="text-emerald-500">✓</span> زيادة الإشغال</li>
-                </ul>
-                <button class="mt-8 w-full py-4 text-[#0A66C2] border border-[#0A66C2] hover:bg-[#0A66C2] hover:text-white rounded-3xl font-medium">سجّل شاشتك</button>
-            </div>
-        </div>
-    </section>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, where, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+        import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-messaging.js";
 
-    <!-- INTEGRATED SYSTEM -->
-    <section id="solutions" class="bg-slate-900 text-white py-24">
-        <div class="max-w-screen-2xl mx-auto px-6">
-            <div class="grid lg:grid-cols-12 gap-12 items-center">
-                <div class="lg:col-span-5">
-                    <h2 class="text-4xl font-bold mb-6">نظام متكامل يعمل معاً</h2>
-                    <p class="text-xl text-slate-400">مرداس تجمع بين إطلاق الحملات، إدارة الشاشات، التصميم بالذكاء الاصطناعي، والربح من الشاشات في منصة واحدة.</p>
-                    
-                    <div class="mt-12 space-y-8">
-                        <div class="flex gap-6">
-                            <div class="text-4xl">📣</div>
-                            <div>
-                                <h4 class="font-semibold text-xl">مرداس إعلانات + ناشر</h4>
-                                <p class="text-slate-400">حملات مدفوعة تصل إلى شاشاتك تلقائياً أو تستهدف جمهورك بدقة.</p>
-                            </div>
-                        </div>
-                        <div class="flex gap-6">
-                            <div class="text-4xl">🎨</div>
-                            <div>
-                                <h4 class="font-semibold text-xl">مرداس ستوديو + ساينج</h4>
-                                <p class="text-slate-400">صمم وأدر الإعلانات مباشرة على شاشاتك من مكان واحد.</p>
-                            </div>
-                        </div>
-                        <div class="flex gap-6">
-                            <div class="text-4xl">📈</div>
-                            <div>
-                                <h4 class="font-semibold text-xl">تقارير فورية</h4>
-                                <p class="text-slate-400">معدلات ظهور، وصول، وعائد الاستثمار في لوحة تحكم موحدة.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="lg:col-span-7 bg-slate-800 rounded-3xl p-8">
-                    <div class="bg-white text-slate-900 rounded-2xl p-8 shadow-2xl">
-                        <div id="demo-tabs" class="flex border-b mb-8">
-                            <button onclick="switchDemo(0)" class="demo-tab active flex-1 py-4 font-medium">إعلانات</button>
-                            <button onclick="switchDemo(1)" class="demo-tab flex-1 py-4 font-medium">ساينج</button>
-                            <button onclick="switchDemo(2)" class="demo-tab flex-1 py-4 font-medium">ستوديو</button>
-                            <button onclick="switchDemo(3)" class="demo-tab flex-1 py-4 font-medium">ناشر</button>
-                        </div>
-                        <div id="demo-content" class="min-h-[280px]">
-                            <!-- Dynamic content injected by JS -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDzugUdSZn10R9sdCSmFJozMt7l3Gn6HeE",
+            authDomain: "netxapp-67f1c.firebaseapp.com",
+            projectId: "netxapp-67f1c",
+            storageBucket: "netxapp-67f1c.firebasestorage.app",
+            messagingSenderId: "715459579684",
+            appId: "1:715459579684:web:b0697cb6cd73ab287badb1",
+            measurementId: "G-SJSYFGTP7E"
+        };
 
-    <!-- HOW IT WORKS -->
-    <section id="how" class="max-w-screen-2xl mx-auto px-6 py-24">
-        <h2 class="text-center text-4xl font-bold mb-16">كيف تبدأ في أقل من ٦٠ ثانية؟</h2>
-        <div class="grid md:grid-cols-3 gap-8">
-            <div class="text-center">
-                <div class="mx-auto w-16 h-16 bg-[#0A66C2] text-white rounded-3xl flex items-center justify-center text-3xl mb-6">1</div>
-                <h3 class="font-semibold text-xl mb-3">سجّل حسابك</h3>
-                <p class="text-slate-600">أنشئ حساباً مجانياً واربط شاشاتك أو ابدأ حملة إعلانية فوراً.</p>
-            </div>
-            <div class="text-center">
-                <div class="mx-auto w-16 h-16 bg-[#0A66C2] text-white rounded-3xl flex items-center justify-center text-3xl mb-6">2</div>
-                <h3 class="font-semibold text-xl mb-3">اختر المنتج</h3>
-                <p class="text-slate-600">مرداس إعلانات، ساينج، ستوديو، أو ناشر – كل شيء متاح.</p>
-            </div>
-            <div class="text-center">
-                <div class="mx-auto w-16 h-16 bg-[#0A66C2] text-white rounded-3xl flex items-center justify-center text-3xl mb-6">3</div>
-                <h3 class="font-semibold text-xl mb-3">ابدأ الربح أو الإعلان</h3>
-                <p class="text-slate-600">تابع التقارير الفورية وشاهد النتائج تتدفق.</p>
-            </div>
-        </div>
-    </section>
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const messaging = getMessaging(app);
+        const googleProvider = new GoogleAuthProvider();
 
-    <!-- BENEFITS / FEATURES -->
-    <section class="bg-slate-100 py-24">
-        <div class="max-w-screen-2xl mx-auto px-6">
-            <h2 class="text-4xl font-bold text-center mb-12">أكثر من ٥٠ ميزة تجعل مرداس الأفضل</h2>
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                <div class="bg-white p-6 rounded-3xl flex gap-4 items-start">
-                    <span class="text-3xl">🎯</span>
-                    <div><strong>استهداف دقيق</strong><br><span class="text-sm text-slate-500">جغرافي + سلوكي + زمني</span></div>
-                </div>
-                <div class="bg-white p-6 rounded-3xl flex gap-4 items-start">
-                    <span class="text-3xl">📡</span>
-                    <div><strong>إدارة آلاف الشاشات</strong><br><span class="text-sm text-slate-500">من فرع واحد أو مئات الفروع</span></div>
-                </div>
-                <div class="bg-white p-6 rounded-3xl flex gap-4 items-start">
-                    <span class="text-3xl">⚡</span>
-                    <div><strong>تحديث فوري</strong><br><span class="text-sm text-slate-500">لا حاجة لأجهزة خارجية</span></div>
-                </div>
-                <div class="bg-white p-6 rounded-3xl flex gap-4 items-start">
-                    <span class="text-3xl">🤖</span>
-                    <div><strong>ذكاء اصطناعي كامل</strong><br><span class="text-sm text-slate-500">تصميم + تحليل + استهداف</span></div>
-                </div>
-                <div class="bg-white p-6 rounded-3xl flex gap-4 items-start">
-                    <span class="text-3xl">💸</span>
-                    <div><strong>دخل سلبي</strong><br><span class="text-sm text-slate-500">شاشاتك تربح تلقائياً</span></div>
-                </div>
-                <div class="bg-white p-6 rounded-3xl flex gap-4 items-start">
-                    <span class="text-3xl">📊</span>
-                    <div><strong>تقارير لحظية</strong><br><span class="text-sm text-slate-500">ظهور • وصول • عائد</span></div>
-                </div>
-            </div>
-        </div>
-    </section>
+        let currentUser = null;
+        let isLoginMode = true;
+        let unsubscribeCampaigns = null;
 
-    <!-- CTA FINAL -->
-    <div class="bg-gradient-to-r from-[#0A66C2] to-blue-700 text-white py-20">
-        <div class="max-w-screen-2xl mx-auto px-6 text-center">
-            <h2 class="text-4xl font-bold mb-4">جاهز لتجربة إعلانية ذكية متكاملة؟</h2>
-            <p class="text-xl max-w-xl mx-auto mb-10">انضم إلى آلاف الشركات التي حوّلت شاشاتها إلى قنوات إعلانية مربحة باستخدام مرداس.</p>
-            <button onclick="startFreeTrial()" class="text-2xl px-14 py-6 bg-white text-[#0A66C2] rounded-3xl font-bold shadow-2xl">ابدأ الآن مجاناً • لا بطاقة مطلوبة</button>
-            <p class="text-white/70 mt-6 text-sm">يتم تفعيل الحساب خلال ٣٠ ثانية</p>
-        </div>
-    </div>
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            document.getElementById('dashboard-btn').classList.toggle('hidden', !user);
+        });
 
-    <!-- FOOTER -->
-    <footer class="bg-slate-950 text-slate-400 py-16">
-        <div class="max-w-screen-2xl mx-auto px-6 grid md:grid-cols-5 gap-y-10">
-            <div>
-                <div class="flex items-center gap-x-3 text-white mb-6">
-                    <div class="w-8 h-8 bg-white text-[#0A66C2] rounded-2xl flex items-center justify-center text-2xl font-bold">م</div>
-                    <span class="text-3xl font-bold">مرداس</span>
-                </div>
-                <p class="text-sm">© ٢٠٢٦ مرداس. جميع الحقوق محفوظة.</p>
-                <p class="text-xs mt-8">منصة إعلانات رقمية سعودية ١٠٠٪</p>
-            </div>
-            <div>
-                <h4 class="font-semibold text-white mb-4">المنتجات</h4>
-                <ul class="space-y-2 text-sm">
-                    <li>مرداس إعلانات</li>
-                    <li>مرداس ساينج</li>
-                    <li>مرداس ستوديو</li>
-                    <li>مرداس ناشر</li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="font-semibold text-white mb-4">الشركة</h4>
-                <ul class="space-y-2 text-sm">
-                    <li>من نحن</li>
-                    <li>المدونة</li>
-                    <li>الوظائف</li>
-                    <li>تواصل معنا</li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="font-semibold text-white mb-4">الموارد</h4>
-                <ul class="space-y-2 text-sm">
-                    <li>مركز المساعدة</li>
-                    <li>دليل المبتدئين</li>
-                    <li>أكاديمية مرداس</li>
-                    <li>قصص نجاح</li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="font-semibold text-white mb-4">تابعنا</h4>
-                <div class="flex gap-x-4 text-3xl">
-                    <span>𝕏</span>
-                    <span>📸</span>
-                    <span>🇸🇦</span>
-                </div>
-                <p class="mt-8 text-xs">مبني كـ PWA كاملة • يعمل بدون إنترنت بعد التثبيت</p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- MODALS -->
-    <!-- Login Modal -->
-    <div id="login-modal" onclick="if(event.target===this)hideLoginModal()" class="hidden fixed inset-0 bg-black/60 z-[9999] flex items-center justify-center">
-        <div onclick="event.stopImmediatePropagation()" class="bg-white rounded-3xl max-w-md w-full mx-4 p-8">
-            <h3 class="text-3xl font-bold mb-8">تسجيل الدخول إلى مرداس</h3>
-            <input type="email" placeholder="البريد الإلكتروني" class="w-full px-6 py-5 rounded-3xl border mb-4 focus:outline-none focus:border-[#0A66C2]">
-            <input type="password" placeholder="كلمة المرور" class="w-full px-6 py-5 rounded-3xl border mb-8 focus:outline-none focus:border-[#0A66C2]">
-            <button onclick="fakeLogin()" class="w-full py-5 bg-[#0A66C2] text-white rounded-3xl text-xl font-semibold">دخول</button>
-            <p class="text-center mt-6 text-sm text-slate-500">أو سجّل حساب جديد • مجاني</p>
-        </div>
-    </div>
-
-    <!-- Product Detail Modal -->
-    <div id="product-modal" onclick="if(event.target===this)hideProductModal()" class="hidden fixed inset-0 bg-black/60 z-[9999] flex items-center justify-center">
-        <div onclick="event.stopImmediatePropagation()" id="modal-content" class="bg-white rounded-3xl max-w-2xl w-full mx-4 p-8 max-h-[90vh] overflow-auto">
-            <!-- Filled by JS -->
-        </div>
-    </div>
-
-    <!-- Success Toast -->
-    <div id="toast" onclick="this.classList.add('hidden')" class="hidden fixed bottom-8 left-1/2 -translate-x-1/2 bg-emerald-600 text-white px-8 py-4 rounded-3xl shadow-2xl flex items-center gap-x-3">
-        <span>🎉</span>
-        <span id="toast-text" class="font-medium"></span>
-    </div>
-
-    <script>
-        // Tailwind script already loaded
-        function initializeTailwind() {
-            // No need - script already injected
+        function showAuthModal() {
+            document.getElementById('auth-modal').classList.remove('hidden');
+            document.getElementById('auth-modal').classList.add('flex');
+            updateAuthUI();
         }
-        
-        // Mobile menu
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobile-menu')
-            menu.classList.toggle('hidden')
+
+        function hideAuthModal() {
+            const modal = document.getElementById('auth-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
         }
-        
-        // Login modal
-        function showLoginModal() {
-            document.getElementById('login-modal').classList.remove('hidden')
-            document.getElementById('login-modal').classList.add('flex')
+
+        function toggleAuthMode() {
+            isLoginMode = !isLoginMode;
+            updateAuthUI();
         }
-        
-        function hideLoginModal() {
-            const modal = document.getElementById('login-modal')
-            modal.classList.add('hidden')
-            modal.classList.remove('flex')
+
+        function updateAuthUI() {
+            document.getElementById('modal-title').textContent = isLoginMode ? 'تسجيل الدخول' : 'إنشاء حساب جديد';
+            document.getElementById('email-btn').textContent = isLoginMode ? 'دخول بالإيميل' : 'إنشاء حساب';
+            document.getElementById('switch-text').textContent = isLoginMode ? 'ليس لديك حساب؟ أنشئ حساب جديد' : 'لديك حساب؟ سجل الدخول';
         }
-        
-        function fakeLogin() {
-            hideLoginModal()
-            showToast('تم تسجيل الدخول بنجاح! مرحباً بك في لوحة تحكم مرداس')
-            setTimeout(() => {
-                window.location.href = '#products'
-            }, 1500)
-        }
-        
-        // Free trial
-        function startFreeTrial() {
-            showToast('تم إنشاء حسابك المجاني! جاري تحميل لوحة التحكم...')
-            setTimeout(() => {
-                showToast('مبروك! حسابك جاهز. يمكنك تثبيت التطبيق الآن من شريط العنوان')
-                // Simulate PWA install prompt
-                if ('standalone' in window.navigator && window.navigator.standalone) {
-                    // Already installed
-                } else if (window.matchMedia('(display-mode: standalone)').matches) {
-                    // Already installed
+
+        async function handleEmailAuth() {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            if (!email || !password) return alert('يرجى ملء الحقول');
+
+            try {
+                if (isLoginMode) {
+                    await signInWithEmailAndPassword(auth, email, password);
                 } else {
-                    // In real PWA this would trigger install
-                    console.log('%cPWA install prompt would appear here', 'color:#0A66C2;font-weight:bold')
+                    await createUserWithEmailAndPassword(auth, email, password);
                 }
-            }, 1800)
-        }
-        
-        // Video fake
-        function watchVideo() {
-            showToast('جاري تشغيل فيديو توضيحي (٩٠ ثانية)')
-            setTimeout(() => {
-                alert('🎬 فيديو مرداس التوضيحي:\n\n"كيف تحول شاشاتك إلى مصدر دخل بالذكاء الاصطناعي"')
-            }, 1200)
-        }
-        
-        // Product modal
-        const productData = {
-            1: {
-                title: "مرداس إعلانات",
-                emoji: "📣",
-                desc: "أقوى أداة لإطلاق حملات إعلانية ذكية على شبكة شاشات مرداس. استهداف دقيق، تتبع لحظي، ونتائج مضمونة.",
-                features: ["استهداف حسب الموقع والوقت", "تقارير ROI فورية", "ميزانية مرنة", "أكثر من ١٥٠٠ موقع نشط"]
-            },
-            2: {
-                title: "مرداس ساينج",
-                emoji: "🖥️",
-                desc: "إدارة كاملة لكل شاشاتك الرقمية من مكان واحد. جدولة، مراقبة، وتحديث فوري.",
-                features: ["دعم غير محدود للشاشات", "مراقبة ٢٤ ساعة", "جدولة ذكية", "لا تحتاج أجهزة إضافية"]
-            },
-            3: {
-                title: "مرداس ستوديو",
-                emoji: "🎨",
-                desc: "صمم إعلانات احترافية بضغطة زر باستخدام الذكاء الاصطناعي. قوالب + هوية بصرية.",
-                features: ["توليد AI فوري", "أكثر من ٢٠٠ قالب", "إضافة شعارك تلقائياً", "تصدير فيديو + صورة"]
-            },
-            4: {
-                title: "مرداس ناشر",
-                emoji: "💰",
-                desc: "حوّل شاشاتك إلى مصدر دخل شهري ثابت. حملات مدفوعة تصل إليك تلقائياً.",
-                features: ["مدفوعات أسبوعية", "تحكم كامل في المحتوى", "تسعير مرن", "زيادة الإشغال بنسبة ٤٠٪"]
+                hideAuthModal();
+                alert('✅ تم بنجاح!');
+            } catch (e) {
+                alert('خطأ: ' + e.message);
             }
         }
-        
-        function showProductDetail(id) {
-            const data = productData[id]
-            const modalHTML = `
-                <div class="flex items-center justify-between border-b pb-6">
-                    <div class="flex items-center gap-x-4">
-                        <span class="text-6xl">${data.emoji}</span>
-                        <h2 class="text-4xl font-bold">${data.title}</h2>
-                    </div>
-                    <button onclick="hideProductModal()" class="text-4xl text-slate-300 hover:text-slate-500">×</button>
-                </div>
-                <p class="py-8 text-xl text-slate-600">${data.desc}</p>
-                <div class="grid grid-cols-2 gap-4 mb-10">
-                    ${data.features.map(f => `
-                        <div class="flex items-center gap-x-3 bg-slate-50 rounded-2xl px-5 py-4">
-                            <span class="text-emerald-500 text-2xl">✓</span>
-                            <span class="font-medium">${f}</span>
+
+        async function handleGoogleSignIn() {
+            try {
+                await signInWithPopup(auth, googleProvider);
+                hideAuthModal();
+            } catch (e) {
+                alert('خطأ في جوجل: ' + e.message);
+            }
+        }
+
+        async function showDashboard() {
+            if (!currentUser) return;
+            const modal = document.getElementById('dashboard-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            document.getElementById('user-info').innerHTML = `
+                <p class="text-lg">مرحباً <strong>${currentUser.email || currentUser.displayName}</strong></p>
+                <button onclick="logout()" class="text-red-600 underline text-sm mt-2">تسجيل خروج</button>
+            `;
+
+            loadCampaignsRealTime();
+        }
+
+        function hideDashboard() {
+            const modal = document.getElementById('dashboard-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            if (unsubscribeCampaigns) unsubscribeCampaigns();
+        }
+
+        function loadCampaignsRealTime() {
+            const listEl = document.getElementById('campaigns-list');
+            listEl.innerHTML = '<p class="text-slate-500">جاري التحميل (Real-time)...</p>';
+
+            const q = query(collection(db, "campaigns"), where("userId", "==", currentUser.uid));
+
+            unsubscribeCampaigns = onSnapshot(q, (snapshot) => {
+                if (snapshot.empty) {
+                    listEl.innerHTML = '<p class="text-slate-500">لا توجد حملات بعد. أضف واحدة!</p>';
+                    return;
+                }
+                let html = '';
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    html += `
+                        <div class="border rounded-3xl p-6 flex justify-between items-center">
+                            <div>
+                                <h4 class="font-bold">${data.title}</h4>
+                                <p class="text-sm text-slate-500">${data.budget} ر.س • ${data.status}</p>
+                            </div>
+                            <div class="text-emerald-600 font-medium">نشط</div>
                         </div>
-                    `).join('')}
-                </div>
-                <button onclick="startFreeTrial();hideProductModal()" class="w-full py-6 bg-[#0A66C2] text-white rounded-3xl text-2xl font-bold">جرب ${data.title} الآن</button>
-                <p class="text-center text-sm text-slate-500 mt-4">متوفر فوراً • لا بطاقة مطلوبة</p>
-            `
-            document.getElementById('modal-content').innerHTML = modalHTML
-            document.getElementById('product-modal').classList.remove('hidden')
-            document.getElementById('product-modal').classList.add('flex')
+                    `;
+                });
+                listEl.innerHTML = html;
+            });
         }
-        
-        function hideProductModal() {
-            const modal = document.getElementById('product-modal')
-            modal.classList.add('hidden')
-            modal.classList.remove('flex')
-        }
-        
-        // Demo tabs inside integrated system
-        let currentDemo = 0
-        const demoContents = [
-            `<div class="text-center py-12"><div class="text-7xl mx-auto mb-6">📣</div><h4 class="font-bold text-3xl">حملة إعلانية جارية</h4><p class="mt-4 text-emerald-600 text-2xl">١٢٤ شاشة • ٩٨٪ ظهور • ROI ٤.٨x</p><div class="mt-12 h-3 bg-emerald-500 w-3/4 mx-auto rounded-full"></div></div>`,
-            `<div class="text-center py-12"><div class="text-7xl mx-auto mb-6">🖥️</div><h4 class="font-bold text-3xl">٢٨٤ شاشة نشطة</h4><p class="mt-4">كلها تحت سيطرتك • محدثة الآن</p><div class="grid grid-cols-4 gap-3 mt-8"><div class="bg-slate-100 p-4 rounded-2xl text-center">فرع الرياض</div><div class="bg-emerald-100 p-4 rounded-2xl text-center">فرع جدة</div><div class="bg-slate-100 p-4 rounded-2xl text-center">فرع الدمام</div><div class="bg-slate-100 p-4 rounded-2xl text-center">+٢٨١</div></div></div>`,
-            `<div class="text-center py-12"><div class="text-7xl mx-auto mb-6">🎨</div><h4 class="font-bold text-3xl">إعلان مولد بالذكاء الاصطناعي</h4><div class="mt-8 bg-gradient-to-br from-pink-100 to-blue-100 h-64 rounded-3xl flex items-center justify-center text-8xl">مرداس</div><p class="text-xs mt-6">تم إنشاؤه في ٢٨ ثانية</p></div>`,
-            `<div class="text-center py-12"><div class="text-7xl mx-auto mb-6">💰</div><h4 class="font-bold text-3xl">دخل هذا الشهر</h4><p class="text-6xl font-bold text-emerald-600 mt-2">٢٨٬٤٥٠ ر.س</p><p class="text-slate-500">من ١٩ حملة مدفوعة</p></div>`
-        ]
-        
-        function switchDemo(n) {
-            currentDemo = n
-            document.getElementById('demo-content').innerHTML = demoContents[n]
-            
-            // Activate tab
-            document.querySelectorAll('.demo-tab').forEach((tab, i) => {
-                if (i === n) tab.classList.add('active', 'border-b-4', 'border-[#0A66C2]')
-                else tab.classList.remove('active', 'border-b-4', 'border-[#0A66C2]')
-            })
-        }
-        
-        // Toast
-        function showToast(message) {
-            const toast = document.getElementById('toast')
-            document.getElementById('toast-text').innerHTML = message
-            toast.classList.remove('hidden')
-            toast.style.display = 'flex'
-            setTimeout(() => {
-                toast.classList.add('hidden')
-            }, 4200)
-        }
-        
-        // PWA Service Worker Registration (inline)
-        function registerServiceWorker() {
-            if ('serviceWorker' in navigator) {
-                // For demo we simulate SW
-                console.log('%c✅ Service Worker جاهز • التطبيق يعمل كـ PWA كاملة', 'color:#0A66C2; font-size:13px')
-                // In production you would have sw.js
+
+        async function addCampaign() {
+            const title = prompt("اسم الحملة:");
+            const budget = prompt("الميزانية (ر.س):", "5000");
+            if (!title) return;
+
+            try {
+                await addDoc(collection(db, "campaigns"), {
+                    userId: currentUser.uid,
+                    title: title,
+                    budget: Number(budget),
+                    status: "نشط",
+                    createdAt: serverTimestamp()
+                });
+                // Real-time سيقوم بالتحديث تلقائياً
+            } catch (e) {
+                alert("خطأ: " + e.message);
             }
         }
-        
-        // Main init
-        window.onload = function() {
-            initializeTailwind()
-            registerServiceWorker()
-            
-            // Default demo tab
-            document.getElementById('demo-content').innerHTML = demoContents[0]
-            document.querySelectorAll('.demo-tab')[0].classList.add('active', 'border-b-4', 'border-[#0A66C2]')
-            
-            console.log('%c🚀 موقع مرداس PWA جاهز تماماً للإطلاق!', 'color:#0A66C2; font-size:18px; font-weight:bold')
-            console.log('كل المزايا من nitx.io تم استخراجها وإعادة تصميمها بالكامل باسم مرداس')
+
+        async function requestNotificationPermission() {
+            try {
+                const permission = await Notification.requestPermission();
+                if (permission === 'granted') {
+                    const token = await getToken(messaging, { 
+                        vapidKey: "BOfXbijxgCHAUuXEmiBlQiDr3HEVBx4QXXQQ55I3vEMFLWyz3PHCtlAZwZ4X18yyn4T0wLLSS_tg6ObpfEmXY58" 
+                    });
+                    console.log('FCM Token:', token);
+                    alert('✅ تم تفعيل الإشعارات بنجاح!\n\nالـ Token: ' + token.substring(0, 30) + '...');
+                } else {
+                    alert('تم رفض إذن الإشعارات من المتصفح');
+                }
+            } catch (e) {
+                console.error(e);
+                alert('خطأ: ' + e.message);
+            }
         }
+
+        async function logout() {
+            await signOut(auth);
+            hideDashboard();
+        }
+
+        // استماع للإشعارات في المقدمة
+        onMessage(messaging, (payload) => {
+            console.log('إشعار جديد:', payload);
+            alert('إشعار: ' + payload.notification?.title);
+        });
+
+        console.log('%c🚀 مرداس جاهز 100% مع Firebase (v12.12.0)\n• Google + Email Auth\n• Real-time Firestore\n• Push Notifications', 'color:#0A66C2; font-size:16px; font-weight:bold');
     </script>
 </body>
 </html>
