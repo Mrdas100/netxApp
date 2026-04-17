@@ -20,17 +20,15 @@
                 <div class="w-10 h-10 bg-[#0A66C2] text-white rounded-2xl flex items-center justify-center text-3xl font-bold">م</div>
                 <h1 class="text-3xl font-bold">مرداس</h1>
             </div>
-            <button onclick="showAuthModal()" id="login-btn" class="bg-[#0A66C2] hover:bg-blue-700 text-white px-6 py-3 rounded-3xl transition">تسجيل الدخول</button>
+            <button onclick="toggleLogin()" id="login-btn" class="bg-[#0A66C2] hover:bg-blue-700 text-white px-6 py-3 rounded-3xl transition">تسجيل الدخول</button>
         </div>
     </nav>
 
     <div class="max-w-7xl mx-auto p-8 text-center">
         <h1 class="text-5xl font-bold my-12">مرداس – المنصة الإعلانية الذكية</h1>
-        <p class="text-xl text-slate-600">مدعومة بـ Firebase Auth + Firestore + Real-time + Push Notifications</p>
-        <p id="status" class="mt-6 text-emerald-600 font-medium"></p>
+        <p id="status" class="text-emerald-600 font-medium text-lg"></p>
         
-        <!-- زر لوحة التحكم -->
-        <button id="dashboard-btn" onclick="showDashboard()" class="hidden mt-8 bg-[#0A66C2] text-white px-8 py-4 rounded-3xl text-lg font-medium">
+        <button id="dashboard-btn" onclick="showDashboard()" class="hidden mt-10 bg-[#0A66C2] text-white px-10 py-5 rounded-3xl text-xl font-medium shadow-lg">
             📊 فتح لوحة التحكم
         </button>
     </div>
@@ -38,26 +36,31 @@
     <!-- Auth Modal -->
     <div id="auth-modal" class="hidden fixed inset-0 bg-black/70 z-[9999] flex items-center justify-center">
         <div class="bg-white rounded-3xl p-8 w-full max-w-md mx-4">
-            <h2 id="modal-title" class="text-2xl font-bold mb-6 text-center">تسجيل الدخول</h2>
+            <h2 class="text-2xl font-bold mb-6 text-center" id="modal-title">تسجيل الدخول</h2>
             <input id="email" type="email" placeholder="البريد الإلكتروني" class="w-full px-5 py-4 border rounded-2xl mb-4">
             <input id="password" type="password" placeholder="كلمة المرور" class="w-full px-5 py-4 border rounded-2xl mb-6">
-            <button onclick="handleEmailAuth()" class="w-full py-4 bg-[#0A66C2] text-white rounded-3xl mb-4 font-medium">دخول / إنشاء حساب</button>
-            <button onclick="hideAuthModal()" class="w-full py-3 text-slate-500">إغلاق</button>
+            <button onclick="handleAuth()" class="w-full py-4 bg-[#0A66C2] text-white rounded-3xl font-medium">دخول / إنشاء حساب</button>
+            <button onclick="hideAuthModal()" class="mt-4 w-full py-3 text-slate-500">إغلاق</button>
         </div>
     </div>
 
-    <!-- Dashboard Modal -->
+    <!-- Dashboard -->
     <div id="dashboard-modal" class="hidden fixed inset-0 bg-black/70 z-[9999] flex items-center justify-center">
         <div class="bg-white rounded-3xl w-full max-w-3xl max-h-[90vh] overflow-auto mx-4">
             <div class="p-6 border-b flex justify-between sticky top-0 bg-white">
                 <h2 class="text-2xl font-bold">لوحة التحكم</h2>
-                <button onclick="hideDashboard()" class="text-3xl">×</button>
+                <button onclick="hideDashboard()" class="text-3xl text-gray-400">×</button>
             </div>
-            <div class="p-6">
-                <div id="user-info" class="mb-6"></div>
-                <h3 class="font-semibold mb-4">حملاتي (Real-time)</h3>
-                <div id="campaigns-list" class="space-y-4 min-h-[150px]"></div>
-                <button onclick="addCampaign()" class="mt-8 w-full py-4 bg-emerald-600 text-white rounded-3xl">+ إضافة حملة جديدة</button>
+            <div class="p-8">
+                <div id="user-info" class="mb-8 text-lg"></div>
+                
+                <h3 class="font-semibold text-xl mb-4">حملاتي (Real-time)</h3>
+                <div id="campaigns-list" class="space-y-4 min-h-[100px]"></div>
+
+                <button onclick="addCampaign()" 
+                        class="mt-10 w-full py-5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-3xl text-lg font-medium">
+                    + إضافة حملة جديدة
+                </button>
             </div>
         </div>
     </div>
@@ -82,7 +85,6 @@
 
         let currentUser = null;
 
-        // مراقبة حالة المستخدم
         auth.onAuthStateChanged(user => {
             currentUser = user;
             const loginBtn = document.getElementById('login-btn');
@@ -90,15 +92,15 @@
             const status = document.getElementById('status');
 
             if (user) {
-                loginBtn.textContent = 'تسجيل خروج';
-                loginBtn.onclick = logout;
+                loginBtn.textContent = "تسجيل خروج";
+                loginBtn.onclick = () => auth.signOut();
                 dashboardBtn.classList.remove('hidden');
-                status.innerHTML = `✅ مرحباً ${user.email} • Firebase يعمل`;
+                status.innerHTML = `✅ مرحباً ${user.email}`;
             } else {
-                loginBtn.textContent = 'تسجيل الدخول';
+                loginBtn.textContent = "تسجيل الدخول";
                 loginBtn.onclick = showAuthModal;
                 dashboardBtn.classList.add('hidden');
-                status.innerHTML = 'Firebase جاهز • سجل دخولك';
+                status.innerHTML = "Firebase جاهز • سجّل الدخول";
             }
         });
 
@@ -113,45 +115,34 @@
             modal.classList.remove('flex');
         }
 
-        async function handleEmailAuth() {
+        async function handleAuth() {
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value.trim();
-            if (!email || !password) return alert('يرجى إدخال البريد وكلمة المرور');
+            if (!email || !password) return alert("يرجى ملء البريد وكلمة المرور");
 
             try {
-                if (auth.currentUser) {
-                    // تسجيل خروج إذا كان مسجلاً
-                    await auth.signOut();
-                } else {
-                    // محاولة الدخول، ثم إنشاء حساب إذا فشل
-                    try {
-                        await auth.signInWithEmailAndPassword(email, password);
-                    } catch (e) {
-                        if (e.code === 'auth/user-not-found') {
-                            await auth.createUserWithEmailAndPassword(email, password);
-                        } else {
-                            throw e;
-                        }
+                try {
+                    await auth.signInWithEmailAndPassword(email, password);
+                } catch (e) {
+                    if (e.code === 'auth/user-not-found') {
+                        await auth.createUserWithEmailAndPassword(email, password);
+                    } else {
+                        throw e;
                     }
                 }
                 hideAuthModal();
             } catch (e) {
-                alert('خطأ: ' + e.message);
+                alert("خطأ: " + e.message);
             }
         }
 
-        function logout() {
-            auth.signOut();
-        }
-
-        async function showDashboard() {
+        function showDashboard() {
             if (!currentUser) return;
-            const modal = document.getElementById('dashboard-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+            document.getElementById('dashboard-modal').classList.remove('hidden');
+            document.getElementById('dashboard-modal').classList.add('flex');
 
             document.getElementById('user-info').innerHTML = `
-                <p class="text-lg font-medium">مرحباً، <strong>${currentUser.email}</strong></p>
+                <p class="text-xl">مرحباً، <strong>${currentUser.email}</strong></p>
             `;
 
             loadCampaigns();
@@ -168,55 +159,57 @@
             list.innerHTML = '<p class="text-slate-500">جاري تحميل الحملات...</p>';
 
             try {
-                const snapshot = await db.collection('campaigns')
-                    .where('userId', '==', currentUser.uid)
+                const snapshot = await db.collection("campaigns")
+                    .where("userId", "==", currentUser.uid)
                     .get();
 
                 if (snapshot.empty) {
-                    list.innerHTML = '<p class="text-slate-500">لا توجد حملات بعد</p>';
+                    list.innerHTML = `<p class="text-slate-500 text-center py-8">لا توجد حملات بعد.<br>اضغط على الزر أدناه لإضافة حملة جديدة.</p>`;
                     return;
                 }
 
                 let html = '';
                 snapshot.forEach(doc => {
-                    const data = doc.data();
+                    const d = doc.data();
                     html += `
-                        <div class="border rounded-3xl p-6">
-                            <h4 class="font-bold">${data.title}</h4>
-                            <p class="text-sm text-slate-500">${data.budget} ر.س • ${data.status || 'نشط'}</p>
+                        <div class="border border-emerald-200 bg-emerald-50 rounded-3xl p-6">
+                            <div class="font-bold text-lg">${d.title}</div>
+                            <div class="text-emerald-700">${d.budget} ر.س • ${d.status || 'نشط'}</div>
                         </div>
                     `;
                 });
                 list.innerHTML = html;
             } catch (e) {
-                list.innerHTML = '<p class="text-red-500">خطأ في تحميل الحملات</p>';
+                list.innerHTML = `<p class="text-red-500">خطأ في تحميل الحملات: ${e.message}</p>`;
             }
         }
 
         async function addCampaign() {
             const title = prompt("اسم الحملة الجديدة:");
-            const budget = prompt("الميزانية (بالريال السعودي):", "5000");
+            if (!title) return;
 
-            if (!title || !budget) return;
+            const budgetStr = prompt("الميزانية (ر.س):", "5000");
+            const budget = parseInt(budgetStr) || 5000;
 
             try {
-                await db.collection('campaigns').add({
+                await db.collection("campaigns").add({
                     userId: currentUser.uid,
                     title: title,
-                    budget: Number(budget),
+                    budget: budget,
                     status: "نشط",
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
+
                 alert("✅ تم إضافة الحملة بنجاح!");
-                loadCampaigns();   // تحديث القائمة
+                loadCampaigns();   // تحديث فوري
             } catch (e) {
-                alert("خطأ: " + e.message);
+                alert("خطأ أثناء إضافة الحملة: " + e.message);
             }
         }
 
-        // تهيئة أولية
-        document.getElementById('status').innerHTML = '✅ Firebase متصل • جرب تسجيل الدخول';
-        console.log('%c🚀 مرداس يعمل الآن مع Firebase كامل', 'color:#0A66C2; font-size:16px');
+        // تهيئة
+        document.getElementById('status').innerHTML = '✅ Firebase متصل • جرب إضافة حملة الآن';
+        console.log('%c🚀 مرداس يعمل بنجاح على GitHub Pages', 'color:#0A66C2; font-size:18px');
     </script>
 </body>
 </html>
