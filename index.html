@@ -46,25 +46,41 @@
 
     <!-- Dashboard Modal -->
     <div id="dashboard-modal" class="hidden fixed inset-0 bg-black/70 z-[9999] flex items-center justify-center">
-        <div class="bg-white rounded-3xl w-full max-w-3xl max-h-[90vh] overflow-auto mx-4">
+        <div class="bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-auto mx-4">
             <div class="p-6 border-b flex justify-between sticky top-0 bg-white">
                 <h2 class="text-2xl font-bold">لوحة التحكم</h2>
                 <button onclick="hideDashboard()" class="text-3xl text-gray-400">×</button>
             </div>
             <div class="p-8">
                 <div id="user-info" class="mb-8 text-lg"></div>
-                
-                <h3 class="font-semibold text-xl mb-4">حملاتي (Real-time)</h3>
-                <div id="campaigns-list" class="space-y-4 min-h-[100px]"></div>
 
-                <div class="flex gap-4 mt-10">
-                    <button onclick="addCampaign()" class="flex-1 py-5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-3xl text-lg font-medium">
+                <!-- تبويبات -->
+                <div class="flex border-b mb-6">
+                    <button onclick="switchTab(0)" id="tab-0" class="tab-btn active px-6 py-3 font-medium border-b-4 border-[#0A66C2]">الحملات</button>
+                    <button onclick="switchTab(1)" id="tab-1" class="tab-btn px-6 py-3 font-medium">الشاشات</button>
+                </div>
+
+                <!-- تبويب الحملات -->
+                <div id="tab-content-0">
+                    <h3 class="font-semibold text-xl mb-4">حملاتي (Real-time)</h3>
+                    <div id="campaigns-list" class="space-y-4 min-h-[100px]"></div>
+                    <button onclick="addCampaign()" class="mt-8 w-full py-5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-3xl text-lg">
                         + إضافة حملة جديدة
                     </button>
-                    <button onclick="enableNotifications()" class="flex-1 py-5 border-2 border-blue-600 text-blue-600 rounded-3xl text-lg font-medium hover:bg-blue-50">
-                        🛎️ تفعيل الإشعارات
+                </div>
+
+                <!-- تبويب الشاشات -->
+                <div id="tab-content-1" class="hidden">
+                    <h3 class="font-semibold text-xl mb-4">شاشاتي</h3>
+                    <div id="screens-list" class="space-y-4 min-h-[100px]"></div>
+                    <button onclick="addScreen()" class="mt-8 w-full py-5 bg-blue-600 hover:bg-blue-700 text-white rounded-3xl text-lg">
+                        + إضافة شاشة جديدة
                     </button>
                 </div>
+
+                <button onclick="enableNotifications()" class="mt-10 w-full py-4 border-2 border-blue-600 text-blue-600 rounded-3xl hover:bg-blue-50">
+                    🛎️ تفعيل الإشعارات
+                </button>
             </div>
         </div>
     </div>
@@ -90,6 +106,7 @@
         const messaging = firebase.messaging();
 
         let currentUser = null;
+        let currentTab = 0;
 
         auth.onAuthStateChanged(user => {
             currentUser = user;
@@ -106,7 +123,7 @@
                 loginBtn.textContent = "تسجيل الدخول";
                 loginBtn.onclick = showAuthModal;
                 dashboardBtn.classList.add('hidden');
-                status.innerHTML = "Firebase جاهز • سجّل الدخول";
+                status.innerHTML = "Firebase جاهز";
             }
         });
 
@@ -144,12 +161,12 @@
             if (!currentUser) return;
             document.getElementById('dashboard-modal').classList.remove('hidden');
             document.getElementById('dashboard-modal').classList.add('flex');
-
+            
             document.getElementById('user-info').innerHTML = `
                 <p class="text-xl">مرحباً، <strong>${currentUser.email}</strong></p>
             `;
 
-            loadCampaigns();
+            switchTab(0); // افتراضياً يفتح تبويب الحملات
         }
 
         function hideDashboard() {
@@ -157,20 +174,31 @@
             document.getElementById('dashboard-modal').classList.remove('flex');
         }
 
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === tab);
+                btn.classList.toggle('border-b-4', i === tab);
+                btn.classList.toggle('border-[#0A66C2]', i === tab);
+            });
+            document.getElementById('tab-content-0').classList.toggle('hidden', tab !== 0);
+            document.getElementById('tab-content-1').classList.toggle('hidden', tab !== 1);
+
+            if (tab === 0) loadCampaigns();
+            if (tab === 1) loadScreens();
+        }
+
+        // ==================== الحملات ====================
         async function loadCampaigns() {
             const list = document.getElementById('campaigns-list');
             list.innerHTML = '<p class="text-slate-500">جاري التحميل...</p>';
 
             try {
-                const snapshot = await db.collection("campaigns")
-                    .where("userId", "==", currentUser.uid)
-                    .get();
-
+                const snapshot = await db.collection("campaigns").where("userId", "==", currentUser.uid).get();
                 if (snapshot.empty) {
-                    list.innerHTML = `<p class="text-slate-500 text-center py-8">لا توجد حملات بعد</p>`;
+                    list.innerHTML = `<p class="text-slate-500 py-8 text-center">لا توجد حملات بعد</p>`;
                     return;
                 }
-
                 let html = '';
                 snapshot.forEach(doc => {
                     const d = doc.data();
@@ -195,9 +223,7 @@
             try {
                 await db.collection("campaigns").add({
                     userId: currentUser.uid,
-                    title: title,
-                    budget: budget,
-                    status: "نشط",
+                    title, budget, status: "نشط",
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 alert("✅ تمت الإضافة!");
@@ -207,29 +233,83 @@
             }
         }
 
+        // ==================== الشاشات ====================
+        async function loadScreens() {
+            const list = document.getElementById('screens-list');
+            list.innerHTML = '<p class="text-slate-500">جاري التحميل...</p>';
+
+            try {
+                const snapshot = await db.collection("screens").where("userId", "==", currentUser.uid).get();
+                if (snapshot.empty) {
+                    list.innerHTML = `<p class="text-slate-500 py-8 text-center">لا توجد شاشات مسجلة بعد</p>`;
+                    return;
+                }
+                let html = '';
+                snapshot.forEach(doc => {
+                    const d = doc.data();
+                    html += `
+                        <div class="border border-blue-200 bg-blue-50 rounded-3xl p-6">
+                            <div class="font-bold">${d.name}</div>
+                            <div class="text-blue-700">${d.location} • ${d.size} • ${d.status}</div>
+                        </div>
+                    `;
+                });
+                list.innerHTML = html;
+            } catch (e) {
+                list.innerHTML = `<p class="text-red-500">خطأ: ${e.message}</p>`;
+            }
+        }
+
+        async function addScreen() {
+            const name = prompt("اسم الشاشة أو رقمها:");
+            if (!name) return;
+            const location = prompt("موقع الشاشة (مثال: الرياض مول - المدخل الرئيسي):", "الرياض");
+            const size = prompt("حجم الشاشة (مثال: 55 إنش):", "55 إنش");
+
+            try {
+                await db.collection("screens").add({
+                    userId: currentUser.uid,
+                    name: name,
+                    location: location,
+                    size: size,
+                    status: "نشط",
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                alert("✅ تم إضافة الشاشة بنجاح!");
+                loadScreens();
+            } catch (e) {
+                alert("خطأ: " + e.message);
+            }
+        }
+
         // Push Notifications
         async function enableNotifications() {
             try {
                 const permission = await Notification.requestPermission();
-                if (permission !== 'granted') {
-                    return alert("تم رفض الإذن");
-                }
+                if (permission !== 'granted') return alert("تم رفض الإذن");
 
                 const token = await messaging.getToken({
                     vapidKey: "BOfXbijxgCHAUuXEmiBlQiDr3HEVBx4QXXQQ55I3vEMFLWyz3PHCtlAZwZ4X18yyn4T0wLLSS_tg6ObpfEmXY58"
                 });
 
                 console.log("FCM Token:", token);
-                alert("✅ تم تفعيل الإشعارات بنجاح!\n\nالتوكن جاهز للاستخدام");
+                alert("✅ تم تفعيل الإشعارات بنجاح!");
             } catch (e) {
-                console.error(e);
-                alert("خطأ في تفعيل الإشعارات: " + e.message);
+                alert("خطأ: " + e.message);
+            }
+        }
+
+        function toggleLogin() {
+            if (auth.currentUser) {
+                auth.signOut();
+            } else {
+                showAuthModal();
             }
         }
 
         // تهيئة
-        document.getElementById('status').innerHTML = '✅ Firebase متصل • مرداس جاهز';
-        console.log('%c🚀 مرداس يعمل بالكامل مع Push Notifications', 'color:#0A66C2; font-size:18px');
+        document.getElementById('status').innerHTML = '✅ Firebase متصل • مرداس جاهز بالكامل';
+        console.log('%c🚀 مرداس الآن مع الحملات + إدارة الشاشات + الإشعارات', 'color:#0A66C2; font-size:18px');
     </script>
 </body>
 </html>
