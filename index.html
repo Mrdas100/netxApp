@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مرداس | كل القنوات الإعلانية في مكان واحد</title>
+    <title>مرداس | المنصة الإعلانية الذكية</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0A66C2">
@@ -20,14 +20,19 @@
                 <div class="w-10 h-10 bg-[#0A66C2] text-white rounded-2xl flex items-center justify-center text-3xl font-bold">م</div>
                 <h1 class="text-3xl font-bold">مرداس</h1>
             </div>
-            <button onclick="showAuthModal()" class="bg-[#0A66C2] hover:bg-blue-700 text-white px-6 py-3 rounded-3xl transition">تسجيل الدخول</button>
+            <button onclick="showAuthModal()" id="login-btn" class="bg-[#0A66C2] hover:bg-blue-700 text-white px-6 py-3 rounded-3xl transition">تسجيل الدخول</button>
         </div>
     </nav>
 
     <div class="max-w-7xl mx-auto p-8 text-center">
         <h1 class="text-5xl font-bold my-12">مرداس – المنصة الإعلانية الذكية</h1>
-        <p class="text-xl text-slate-600 mb-4">مدعومة بـ Firebase Auth + Firestore + Real-time + Push Notifications</p>
-        <p id="status" class="text-emerald-600 font-medium">جاري تهيئة Firebase...</p>
+        <p class="text-xl text-slate-600">مدعومة بـ Firebase Auth + Firestore + Real-time + Push Notifications</p>
+        <p id="status" class="mt-6 text-emerald-600 font-medium"></p>
+        
+        <!-- زر لوحة التحكم -->
+        <button id="dashboard-btn" onclick="showDashboard()" class="hidden mt-8 bg-[#0A66C2] text-white px-8 py-4 rounded-3xl text-lg font-medium">
+            📊 فتح لوحة التحكم
+        </button>
     </div>
 
     <!-- Auth Modal -->
@@ -36,9 +41,24 @@
             <h2 id="modal-title" class="text-2xl font-bold mb-6 text-center">تسجيل الدخول</h2>
             <input id="email" type="email" placeholder="البريد الإلكتروني" class="w-full px-5 py-4 border rounded-2xl mb-4">
             <input id="password" type="password" placeholder="كلمة المرور" class="w-full px-5 py-4 border rounded-2xl mb-6">
-            <button onclick="handleEmailAuth()" class="w-full py-4 bg-[#0A66C2] text-white rounded-3xl mb-4">دخول بالإيميل</button>
-            <button onclick="handleGoogleSignIn()" class="w-full py-4 border border-gray-300 rounded-3xl flex items-center justify-center gap-3">تسجيل الدخول بحساب جوجل</button>
-            <p onclick="toggleAuthMode()" id="switch-text" class="text-center mt-6 text-blue-600 cursor-pointer">ليس لديك حساب؟ أنشئ حساب جديد</p>
+            <button onclick="handleEmailAuth()" class="w-full py-4 bg-[#0A66C2] text-white rounded-3xl mb-4 font-medium">دخول / إنشاء حساب</button>
+            <button onclick="hideAuthModal()" class="w-full py-3 text-slate-500">إغلاق</button>
+        </div>
+    </div>
+
+    <!-- Dashboard Modal -->
+    <div id="dashboard-modal" class="hidden fixed inset-0 bg-black/70 z-[9999] flex items-center justify-center">
+        <div class="bg-white rounded-3xl w-full max-w-3xl max-h-[90vh] overflow-auto mx-4">
+            <div class="p-6 border-b flex justify-between sticky top-0 bg-white">
+                <h2 class="text-2xl font-bold">لوحة التحكم</h2>
+                <button onclick="hideDashboard()" class="text-3xl">×</button>
+            </div>
+            <div class="p-6">
+                <div id="user-info" class="mb-6"></div>
+                <h3 class="font-semibold mb-4">حملاتي (Real-time)</h3>
+                <div id="campaigns-list" class="space-y-4 min-h-[150px]"></div>
+                <button onclick="addCampaign()" class="mt-8 w-full py-4 bg-emerald-600 text-white rounded-3xl">+ إضافة حملة جديدة</button>
+            </div>
         </div>
     </div>
 
@@ -61,58 +81,142 @@
         const db = firebase.firestore();
 
         let currentUser = null;
-        let isLoginMode = true;
 
-        firebase.auth().onAuthStateChanged(user => {
+        // مراقبة حالة المستخدم
+        auth.onAuthStateChanged(user => {
             currentUser = user;
-            if (user) document.getElementById('status').innerHTML = '✅ تم تسجيل الدخول • Firebase يعمل';
+            const loginBtn = document.getElementById('login-btn');
+            const dashboardBtn = document.getElementById('dashboard-btn');
+            const status = document.getElementById('status');
+
+            if (user) {
+                loginBtn.textContent = 'تسجيل خروج';
+                loginBtn.onclick = logout;
+                dashboardBtn.classList.remove('hidden');
+                status.innerHTML = `✅ مرحباً ${user.email} • Firebase يعمل`;
+            } else {
+                loginBtn.textContent = 'تسجيل الدخول';
+                loginBtn.onclick = showAuthModal;
+                dashboardBtn.classList.add('hidden');
+                status.innerHTML = 'Firebase جاهز • سجل دخولك';
+            }
         });
 
         function showAuthModal() {
             document.getElementById('auth-modal').classList.remove('hidden');
             document.getElementById('auth-modal').classList.add('flex');
-            updateAuthUI();
         }
 
         function hideAuthModal() {
-            const m = document.getElementById('auth-modal');
-            m.classList.add('hidden');
-            m.classList.remove('flex');
-        }
-
-        function updateAuthUI() {
-            document.getElementById('modal-title').textContent = isLoginMode ? 'تسجيل الدخول' : 'إنشاء حساب جديد';
-        }
-
-        function toggleAuthMode() {
-            isLoginMode = !isLoginMode;
-            updateAuthUI();
+            const modal = document.getElementById('auth-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
         }
 
         async function handleEmailAuth() {
             const email = document.getElementById('email').value.trim();
-            const pass = document.getElementById('password').value.trim();
-            if (!email || !pass) return alert('أدخل البريد وكلمة المرور');
+            const password = document.getElementById('password').value.trim();
+            if (!email || !password) return alert('يرجى إدخال البريد وكلمة المرور');
 
             try {
-                if (isLoginMode) {
-                    await auth.signInWithEmailAndPassword(email, pass);
+                if (auth.currentUser) {
+                    // تسجيل خروج إذا كان مسجلاً
+                    await auth.signOut();
                 } else {
-                    await auth.createUserWithEmailAndPassword(email, pass);
+                    // محاولة الدخول، ثم إنشاء حساب إذا فشل
+                    try {
+                        await auth.signInWithEmailAndPassword(email, password);
+                    } catch (e) {
+                        if (e.code === 'auth/user-not-found') {
+                            await auth.createUserWithEmailAndPassword(email, password);
+                        } else {
+                            throw e;
+                        }
+                    }
                 }
                 hideAuthModal();
-                alert('✅ تم بنجاح!');
             } catch (e) {
                 alert('خطأ: ' + e.message);
             }
         }
 
-        function handleGoogleSignIn() {
-            alert('Google Sign-In سيتم تفعيله في التحديث القادم (نستخدم compat الآن)');
+        function logout() {
+            auth.signOut();
         }
 
-        console.log('%c✅ مرداس يعمل على GitHub Pages مع Firebase Compat', 'color:#0A66C2;font-size:16px');
-        document.getElementById('status').innerHTML = '✅ Firebase جاهز للربط • اضغط تسجيل الدخول';
+        async function showDashboard() {
+            if (!currentUser) return;
+            const modal = document.getElementById('dashboard-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            document.getElementById('user-info').innerHTML = `
+                <p class="text-lg font-medium">مرحباً، <strong>${currentUser.email}</strong></p>
+            `;
+
+            loadCampaigns();
+        }
+
+        function hideDashboard() {
+            const modal = document.getElementById('dashboard-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        async function loadCampaigns() {
+            const list = document.getElementById('campaigns-list');
+            list.innerHTML = '<p class="text-slate-500">جاري تحميل الحملات...</p>';
+
+            try {
+                const snapshot = await db.collection('campaigns')
+                    .where('userId', '==', currentUser.uid)
+                    .get();
+
+                if (snapshot.empty) {
+                    list.innerHTML = '<p class="text-slate-500">لا توجد حملات بعد</p>';
+                    return;
+                }
+
+                let html = '';
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    html += `
+                        <div class="border rounded-3xl p-6">
+                            <h4 class="font-bold">${data.title}</h4>
+                            <p class="text-sm text-slate-500">${data.budget} ر.س • ${data.status || 'نشط'}</p>
+                        </div>
+                    `;
+                });
+                list.innerHTML = html;
+            } catch (e) {
+                list.innerHTML = '<p class="text-red-500">خطأ في تحميل الحملات</p>';
+            }
+        }
+
+        async function addCampaign() {
+            const title = prompt("اسم الحملة الجديدة:");
+            const budget = prompt("الميزانية (بالريال السعودي):", "5000");
+
+            if (!title || !budget) return;
+
+            try {
+                await db.collection('campaigns').add({
+                    userId: currentUser.uid,
+                    title: title,
+                    budget: Number(budget),
+                    status: "نشط",
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                alert("✅ تم إضافة الحملة بنجاح!");
+                loadCampaigns();   // تحديث القائمة
+            } catch (e) {
+                alert("خطأ: " + e.message);
+            }
+        }
+
+        // تهيئة أولية
+        document.getElementById('status').innerHTML = '✅ Firebase متصل • جرب تسجيل الدخول';
+        console.log('%c🚀 مرداس يعمل الآن مع Firebase كامل', 'color:#0A66C2; font-size:16px');
     </script>
 </body>
 </html>
