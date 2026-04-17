@@ -12,7 +12,7 @@
         body { font-family: 'Cairo', system-ui, sans-serif; }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen">
+<body class="bg-slate-50">
 
     <nav class="bg-white border-b shadow-sm sticky top-0 z-50 p-4">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
@@ -20,21 +20,33 @@
                 <div class="w-10 h-10 bg-[#0A66C2] text-white rounded-2xl flex items-center justify-center text-3xl font-bold">م</div>
                 <h1 class="text-3xl font-bold">مرداس</h1>
             </div>
-            <button onclick="showAuthModal()" class="bg-[#0A66C2] text-white px-6 py-3 rounded-3xl">تسجيل الدخول</button>
+            <button onclick="showAuthModal()" class="bg-[#0A66C2] hover:bg-blue-700 text-white px-6 py-3 rounded-3xl transition">تسجيل الدخول</button>
         </div>
     </nav>
 
     <div class="max-w-7xl mx-auto p-8 text-center">
         <h1 class="text-5xl font-bold my-12">مرداس – المنصة الإعلانية الذكية</h1>
-        <p class="text-xl text-slate-600">مدعومة بـ Firebase Auth + Firestore + Real-time</p>
-        
-        <div id="status" class="mt-8 text-sm text-green-600 font-medium"></div>
+        <p class="text-xl text-slate-600 mb-4">مدعومة بـ Firebase Auth + Firestore + Real-time + Push Notifications</p>
+        <p id="status" class="text-emerald-600 font-medium">جاري تهيئة Firebase...</p>
     </div>
 
-    <!-- باقي المودالز والكود المبسط -->
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="hidden fixed inset-0 bg-black/70 z-[9999] flex items-center justify-center">
+        <div class="bg-white rounded-3xl p-8 w-full max-w-md mx-4">
+            <h2 id="modal-title" class="text-2xl font-bold mb-6 text-center">تسجيل الدخول</h2>
+            <input id="email" type="email" placeholder="البريد الإلكتروني" class="w-full px-5 py-4 border rounded-2xl mb-4">
+            <input id="password" type="password" placeholder="كلمة المرور" class="w-full px-5 py-4 border rounded-2xl mb-6">
+            <button onclick="handleEmailAuth()" class="w-full py-4 bg-[#0A66C2] text-white rounded-3xl mb-4">دخول بالإيميل</button>
+            <button onclick="handleGoogleSignIn()" class="w-full py-4 border border-gray-300 rounded-3xl flex items-center justify-center gap-3">تسجيل الدخول بحساب جوجل</button>
+            <p onclick="toggleAuthMode()" id="switch-text" class="text-center mt-6 text-blue-600 cursor-pointer">ليس لديك حساب؟ أنشئ حساب جديد</p>
+        </div>
+    </div>
 
-    <script type="module">
-        // Firebase Config
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+
+    <script>
         const firebaseConfig = {
             apiKey: "AIzaSyDzugUdSZn10R9sdCSmFJozMt7l3Gn6HeE",
             authDomain: "netxapp-67f1c.firebaseapp.com",
@@ -44,15 +56,63 @@
             appId: "1:715459579684:web:b0697cb6cd73ab287badb1"
         };
 
-        // للاختبار البسيط - سنضيف Firebase تدريجياً
-        console.log("%c✅ الموقع محمل بنجاح على GitHub Pages", "color:#0A66C2; font-size:16px");
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        let currentUser = null;
+        let isLoginMode = true;
+
+        firebase.auth().onAuthStateChanged(user => {
+            currentUser = user;
+            if (user) document.getElementById('status').innerHTML = '✅ تم تسجيل الدخول • Firebase يعمل';
+        });
 
         function showAuthModal() {
-            alert("✅ تم فتح نافذة تسجيل الدخول (سيتم تفعيل Firebase قريباً)");
-            // سنضيف الكود الكامل لاحقاً
+            document.getElementById('auth-modal').classList.remove('hidden');
+            document.getElementById('auth-modal').classList.add('flex');
+            updateAuthUI();
         }
 
-        document.getElementById('status').innerHTML = 'الموقع يعمل • Firebase جاهز للربط';
+        function hideAuthModal() {
+            const m = document.getElementById('auth-modal');
+            m.classList.add('hidden');
+            m.classList.remove('flex');
+        }
+
+        function updateAuthUI() {
+            document.getElementById('modal-title').textContent = isLoginMode ? 'تسجيل الدخول' : 'إنشاء حساب جديد';
+        }
+
+        function toggleAuthMode() {
+            isLoginMode = !isLoginMode;
+            updateAuthUI();
+        }
+
+        async function handleEmailAuth() {
+            const email = document.getElementById('email').value.trim();
+            const pass = document.getElementById('password').value.trim();
+            if (!email || !pass) return alert('أدخل البريد وكلمة المرور');
+
+            try {
+                if (isLoginMode) {
+                    await auth.signInWithEmailAndPassword(email, pass);
+                } else {
+                    await auth.createUserWithEmailAndPassword(email, pass);
+                }
+                hideAuthModal();
+                alert('✅ تم بنجاح!');
+            } catch (e) {
+                alert('خطأ: ' + e.message);
+            }
+        }
+
+        function handleGoogleSignIn() {
+            alert('Google Sign-In سيتم تفعيله في التحديث القادم (نستخدم compat الآن)');
+        }
+
+        console.log('%c✅ مرداس يعمل على GitHub Pages مع Firebase Compat', 'color:#0A66C2;font-size:16px');
+        document.getElementById('status').innerHTML = '✅ Firebase جاهز للربط • اضغط تسجيل الدخول';
     </script>
 </body>
 </html>
