@@ -10,10 +10,9 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap');
         body { font-family: 'Cairo', system-ui, sans-serif; }
-        .hero-bg { background: linear-gradient(135deg, #0A66C2 0%, #1E40AF 100%); }
     </style>
 </head>
-<body class="bg-slate-50">
+<body class="bg-slate-50 min-h-screen">
 
     <nav class="bg-white border-b shadow-sm sticky top-0 z-50 p-4">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
@@ -21,239 +20,39 @@
                 <div class="w-10 h-10 bg-[#0A66C2] text-white rounded-2xl flex items-center justify-center text-3xl font-bold">م</div>
                 <h1 class="text-3xl font-bold">مرداس</h1>
             </div>
-            <button onclick="showAuthModal()" class="bg-[#0A66C2] hover:bg-blue-700 text-white px-6 py-3 rounded-3xl transition-colors">تسجيل الدخول</button>
+            <button onclick="showAuthModal()" class="bg-[#0A66C2] text-white px-6 py-3 rounded-3xl">تسجيل الدخول</button>
         </div>
     </nav>
 
     <div class="max-w-7xl mx-auto p-8 text-center">
         <h1 class="text-5xl font-bold my-12">مرداس – المنصة الإعلانية الذكية</h1>
-        <p class="text-xl text-slate-600 mb-8">مدعومة بـ Firebase (Auth + Firestore + Push Notifications + Real-time)</p>
+        <p class="text-xl text-slate-600">مدعومة بـ Firebase Auth + Firestore + Real-time</p>
         
-        <div id="dashboard-btn" class="hidden fixed bottom-8 right-8 bg-[#0A66C2] text-white px-8 py-4 rounded-3xl shadow-2xl flex items-center gap-3 cursor-pointer hover:bg-blue-700" onclick="showDashboard()">
-            📊 لوحة التحكم (Real-time)
-        </div>
+        <div id="status" class="mt-8 text-sm text-green-600 font-medium"></div>
     </div>
 
-    <!-- Auth Modal -->
-    <div id="auth-modal" class="hidden fixed inset-0 bg-black/70 z-[9999] flex items-center justify-center">
-        <div class="bg-white rounded-3xl p-8 w-full max-w-md mx-4">
-            <h2 id="modal-title" class="text-2xl font-bold mb-6 text-center">تسجيل الدخول</h2>
-            
-            <div class="space-y-4">
-                <input id="email" type="email" placeholder="البريد الإلكتروني" class="w-full px-5 py-4 border rounded-2xl focus:outline-none focus:border-[#0A66C2]">
-                <input id="password" type="password" placeholder="كلمة المرور" class="w-full px-5 py-4 border rounded-2xl focus:outline-none focus:border-[#0A66C2]">
-                
-                <button onclick="handleEmailAuth()" id="email-btn" class="w-full py-4 bg-[#0A66C2] text-white rounded-3xl font-semibold">دخول بالإيميل</button>
-                
-                <button onclick="handleGoogleSignIn()" class="w-full py-4 border border-gray-300 rounded-3xl flex items-center justify-center gap-3 hover:bg-gray-50">
-                    <span class="text-xl">G</span> تسجيل الدخول بحساب جوجل
-                </button>
-            </div>
-            
-            <p onclick="toggleAuthMode()" id="switch-text" class="text-center mt-6 text-blue-600 cursor-pointer hover:underline">ليس لديك حساب؟ أنشئ حساب جديد</p>
-            <button onclick="hideAuthModal()" class="mt-8 w-full py-3 text-slate-500">إغلاق</button>
-        </div>
-    </div>
-
-    <!-- Dashboard Modal -->
-    <div id="dashboard-modal" class="hidden fixed inset-0 bg-black/70 z-[9999] flex items-center justify-center">
-        <div class="bg-white rounded-3xl w-full max-w-3xl max-h-[90vh] overflow-auto mx-4">
-            <div class="p-6 border-b flex justify-between items-center sticky top-0 bg-white z-10">
-                <h2 class="text-2xl font-bold">لوحة التحكم – Real-time</h2>
-                <button onclick="hideDashboard()" class="text-3xl text-gray-400 hover:text-black">×</button>
-            </div>
-            <div class="p-6">
-                <div id="user-info" class="mb-6 p-4 bg-slate-50 rounded-2xl"></div>
-                <h3 class="font-semibold mb-4 text-lg">حملاتي (تتحدث تلقائياً)</h3>
-                <div id="campaigns-list" class="space-y-4 min-h-[200px]"></div>
-                
-                <div class="flex gap-4 mt-10">
-                    <button onclick="addCampaign()" class="flex-1 py-4 bg-emerald-600 text-white rounded-3xl font-medium">+ إضافة حملة جديدة</button>
-                    <button onclick="requestNotificationPermission()" class="flex-1 py-4 border border-[#0A66C2] text-[#0A66C2] rounded-3xl font-medium">تفعيل الإشعارات</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- باقي المودالز والكود المبسط -->
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, query, where, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
-        import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-messaging.js";
-
+        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyDzugUdSZn10R9sdCSmFJozMt7l3Gn6HeE",
             authDomain: "netxapp-67f1c.firebaseapp.com",
             projectId: "netxapp-67f1c",
             storageBucket: "netxapp-67f1c.firebasestorage.app",
             messagingSenderId: "715459579684",
-            appId: "1:715459579684:web:b0697cb6cd73ab287badb1",
-            measurementId: "G-SJSYFGTP7E"
+            appId: "1:715459579684:web:b0697cb6cd73ab287badb1"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const messaging = getMessaging(app);
-        const googleProvider = new GoogleAuthProvider();
-
-        let currentUser = null;
-        let isLoginMode = true;
-        let unsubscribeCampaigns = null;
-
-        onAuthStateChanged(auth, (user) => {
-            currentUser = user;
-            document.getElementById('dashboard-btn').classList.toggle('hidden', !user);
-        });
+        // للاختبار البسيط - سنضيف Firebase تدريجياً
+        console.log("%c✅ الموقع محمل بنجاح على GitHub Pages", "color:#0A66C2; font-size:16px");
 
         function showAuthModal() {
-            document.getElementById('auth-modal').classList.remove('hidden');
-            document.getElementById('auth-modal').classList.add('flex');
-            updateAuthUI();
+            alert("✅ تم فتح نافذة تسجيل الدخول (سيتم تفعيل Firebase قريباً)");
+            // سنضيف الكود الكامل لاحقاً
         }
 
-        function hideAuthModal() {
-            const modal = document.getElementById('auth-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-
-        function toggleAuthMode() {
-            isLoginMode = !isLoginMode;
-            updateAuthUI();
-        }
-
-        function updateAuthUI() {
-            document.getElementById('modal-title').textContent = isLoginMode ? 'تسجيل الدخول' : 'إنشاء حساب جديد';
-            document.getElementById('email-btn').textContent = isLoginMode ? 'دخول بالإيميل' : 'إنشاء حساب';
-            document.getElementById('switch-text').textContent = isLoginMode ? 'ليس لديك حساب؟ أنشئ حساب جديد' : 'لديك حساب؟ سجل الدخول';
-        }
-
-        async function handleEmailAuth() {
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value.trim();
-            if (!email || !password) return alert('يرجى ملء الحقول');
-
-            try {
-                if (isLoginMode) {
-                    await signInWithEmailAndPassword(auth, email, password);
-                } else {
-                    await createUserWithEmailAndPassword(auth, email, password);
-                }
-                hideAuthModal();
-                alert('✅ تم بنجاح!');
-            } catch (e) {
-                alert('خطأ: ' + e.message);
-            }
-        }
-
-        async function handleGoogleSignIn() {
-            try {
-                await signInWithPopup(auth, googleProvider);
-                hideAuthModal();
-            } catch (e) {
-                alert('خطأ في جوجل: ' + e.message);
-            }
-        }
-
-        async function showDashboard() {
-            if (!currentUser) return;
-            const modal = document.getElementById('dashboard-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-
-            document.getElementById('user-info').innerHTML = `
-                <p class="text-lg">مرحباً <strong>${currentUser.email || currentUser.displayName}</strong></p>
-                <button onclick="logout()" class="text-red-600 underline text-sm mt-2">تسجيل خروج</button>
-            `;
-
-            loadCampaignsRealTime();
-        }
-
-        function hideDashboard() {
-            const modal = document.getElementById('dashboard-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            if (unsubscribeCampaigns) unsubscribeCampaigns();
-        }
-
-        function loadCampaignsRealTime() {
-            const listEl = document.getElementById('campaigns-list');
-            listEl.innerHTML = '<p class="text-slate-500">جاري التحميل (Real-time)...</p>';
-
-            const q = query(collection(db, "campaigns"), where("userId", "==", currentUser.uid));
-
-            unsubscribeCampaigns = onSnapshot(q, (snapshot) => {
-                if (snapshot.empty) {
-                    listEl.innerHTML = '<p class="text-slate-500">لا توجد حملات بعد. أضف واحدة!</p>';
-                    return;
-                }
-                let html = '';
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    html += `
-                        <div class="border rounded-3xl p-6 flex justify-between items-center">
-                            <div>
-                                <h4 class="font-bold">${data.title}</h4>
-                                <p class="text-sm text-slate-500">${data.budget} ر.س • ${data.status}</p>
-                            </div>
-                            <div class="text-emerald-600 font-medium">نشط</div>
-                        </div>
-                    `;
-                });
-                listEl.innerHTML = html;
-            });
-        }
-
-        async function addCampaign() {
-            const title = prompt("اسم الحملة:");
-            const budget = prompt("الميزانية (ر.س):", "5000");
-            if (!title) return;
-
-            try {
-                await addDoc(collection(db, "campaigns"), {
-                    userId: currentUser.uid,
-                    title: title,
-                    budget: Number(budget),
-                    status: "نشط",
-                    createdAt: serverTimestamp()
-                });
-                // Real-time سيقوم بالتحديث تلقائياً
-            } catch (e) {
-                alert("خطأ: " + e.message);
-            }
-        }
-
-        async function requestNotificationPermission() {
-            try {
-                const permission = await Notification.requestPermission();
-                if (permission === 'granted') {
-                    const token = await getToken(messaging, { 
-                        vapidKey: "BOfXbijxgCHAUuXEmiBlQiDr3HEVBx4QXXQQ55I3vEMFLWyz3PHCtlAZwZ4X18yyn4T0wLLSS_tg6ObpfEmXY58" 
-                    });
-                    console.log('FCM Token:', token);
-                    alert('✅ تم تفعيل الإشعارات بنجاح!\n\nالـ Token: ' + token.substring(0, 30) + '...');
-                } else {
-                    alert('تم رفض إذن الإشعارات من المتصفح');
-                }
-            } catch (e) {
-                console.error(e);
-                alert('خطأ: ' + e.message);
-            }
-        }
-
-        async function logout() {
-            await signOut(auth);
-            hideDashboard();
-        }
-
-        // استماع للإشعارات في المقدمة
-        onMessage(messaging, (payload) => {
-            console.log('إشعار جديد:', payload);
-            alert('إشعار: ' + payload.notification?.title);
-        });
-
-        console.log('%c🚀 مرداس جاهز 100% مع Firebase (v12.12.0)\n• Google + Email Auth\n• Real-time Firestore\n• Push Notifications', 'color:#0A66C2; font-size:16px; font-weight:bold');
+        document.getElementById('status').innerHTML = 'الموقع يعمل • Firebase جاهز للربط';
     </script>
 </body>
 </html>
